@@ -20,6 +20,10 @@ const ExpenseSchema = mongoose.Schema({
   comment: {
     type: mongoose.Schema.Types.String,
   },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+  },
 });
 
 module.exports = mongoose.model("Expense", ExpenseSchema);

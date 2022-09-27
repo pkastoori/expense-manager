@@ -3,6 +3,7 @@ const Expense = require("../models/expenseModel");
 const getExpenses = (req, res) => {
   Expense.find()
     .sort("-purchaseDate")
+    .populate("category", "name")
     .then((response) => {
       return res.status(200).json(response);
     })
@@ -13,8 +14,8 @@ const getExpenses = (req, res) => {
 };
 
 const addExpense = (req, res) => {
-  const { name, quantity, price, purchaseDate, comment } = req.body;
-  if (!name || !quantity || !price || !purchaseDate)
+  const { name, quantity, price, purchaseDate, comment, category } = req.body;
+  if (!name || !quantity || !price || !purchaseDate || !category)
     return res.status(400).json({ msg: "Please enter all the fields" });
   Expense.create({
     name,
@@ -22,6 +23,7 @@ const addExpense = (req, res) => {
     price,
     purchaseDate: new Date(purchaseDate),
     comment,
+    category,
   })
     .then((response) => {
       return res.status(201).json(response);
@@ -34,8 +36,8 @@ const addExpense = (req, res) => {
 
 const updateExpense = (req, res) => {
   const { id } = req.params;
-  const { name, price, purchaseDate, quantity, comment } = req.body;
-  if (!name || !quantity || !price || !purchaseDate)
+  const { name, price, purchaseDate, quantity, comment, category } = req.body;
+  if (!name || !quantity || !price || !purchaseDate || !category)
     return res.status(400).json({ msg: "Please enter all the fields" });
   Expense.findByIdAndUpdate(
     id,
@@ -45,6 +47,7 @@ const updateExpense = (req, res) => {
       comment,
       quantity,
       purchaseDate: new Date(purchaseDate),
+      category,
     },
     { new: true }
   )
@@ -102,7 +105,7 @@ const sumOfExpenses = (req, res) => {
     },
     {
       $group: {
-        _id: null,
+        _id: "$category",
         total: { $sum: "$price" },
       },
     },
