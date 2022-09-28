@@ -29,7 +29,7 @@ const getCategory = (req, res) => {
 };
 
 const addCategory = (req, res) => {
-  const { name, createdAt } = req.body;
+  const { name, createdAt, subCategories } = req.body;
 
   if (!name) {
     return res.status(400).json({ msg: "Name is mandatory" });
@@ -38,6 +38,7 @@ const addCategory = (req, res) => {
   Category.create({
     name: name,
     createdAt: new Date(createdAt),
+    subCategories: subCategories,
   })
     .then((response) => {
       return res.status(201).json(response);
